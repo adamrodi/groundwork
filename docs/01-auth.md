@@ -1,6 +1,6 @@
 # Phase 1 — Auth
 
-**Status:** not started
+**Status:** complete
 **Prerequisites:** none
 
 ## Goal
@@ -9,112 +9,66 @@ Salim logs in once on his phone and stays logged in. All protected routes redire
 
 ## Files
 
-Create:
+Created:
+
 - `src/lib/auth.tsx` — AuthContext, AuthProvider, useAuth hook
 - `src/components/ProtectedRoute.tsx` — route guard component
 
-Modify:
-- `src/pages/Login.tsx` — implement the login form
-- `src/App.tsx` — wrap app in AuthProvider, guard all routes except /login
+Modified:
+
+- `src/pages/Login.tsx` — login form
+- `src/App.tsx` — AuthProvider wrapping BrowserRouter, ProtectedRoute on all non-login routes
 
 ## No new dependencies
 
-No new packages or shadcn components needed. Uses existing Button, Input, Label.
+Uses existing: Button, Input, Label, Card from `src/components/ui/`.
+
+## Architecture decisions
+
+**AuthProvider wraps BrowserRouter.** Auth state is not router-dependent, so `AuthProvider` is the outermost wrapper in `App.tsx`. `ProtectedRoute` works fine because `<Navigate>` only requires being inside `<BrowserRouter>`, which it is.
+
+**`useAuth` exposes `signOut`.** Context shape: `{ session, user, loading, signOut }`. Centralises the sign-out call so components import from `@/lib/auth` rather than `@supabase/supabase-js` directly. The `onAuthStateChange` listener handles the session update automatically.
+
+**Loading returns `null`.** `getSession()` reads from localStorage — sub-frame latency on a PWA with a cached app shell. No spinner needed.
+
+**No global nav in Phase 1.** Phase 2 (Clients) introduces `Layout.tsx` with a bottom nav bar using React Router nested routes + `<Outlet>`. Phase 1's flat `<ProtectedRoute>` per-route wrapping will be refactored then.
 
 ## Implementation
 
-### 1. `src/lib/auth.tsx`
+### `src/lib/auth.tsx`
 
-Create a context with shape `{ session: Session | null, user: User | null, loading: boolean }`.
+Context shape: `{ session: Session | null, user: User | null, loading: boolean, signOut: () => Promise<void> }`.
 
-```tsx
-import { createContext, useContext, useEffect, useState } from 'react'
-import { Session, User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
+Call `getSession()` first to hydrate from localStorage, then register `onAuthStateChange`. This is the required order — `onAuthStateChange` does not fire for the initial session on load.
 
-type AuthContextType = {
-  session: Session | null
-  user: User | null
-  loading: boolean
-}
+### `src/components/ProtectedRoute.tsx`
 
-const AuthContext = createContext<AuthContextType>({
-  session: null,
-  user: null,
-  loading: true,
-})
+- `loading` → return `null`
+- no `session` → `<Navigate to="/login" replace />`
+- otherwise → render children
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null)
-  const [loading, setLoading] = useState(true)
+### `src/pages/Login.tsx`
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setLoading(false)
-    })
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
-
-  return (
-    <AuthContext.Provider value={{ session, user: session?.user ?? null, loading }}>
-      {children}
-    </AuthContext.Provider>
-  )
-}
-
-export function useAuth() {
-  return useContext(AuthContext)
-}
-```
-
-### 2. `src/components/ProtectedRoute.tsx`
-
-```tsx
-import { Navigate } from 'react-router-dom'
-import { useAuth } from '@/lib/auth'
-
-export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { session, loading } = useAuth()
-
-  if (loading) return null
-
-  if (!session) return <Navigate to="/login" replace />
-
-  return <>{children}</>
-}
-```
-
-### 3. `src/pages/Login.tsx`
-
-- Email + password form, no sign-up link
+- Check auth at top of component: `if (loading) return null`, `if (session) return <Navigate to="/" replace />`
+- State: `email`, `password`, `error: string | null`, `submitting: boolean`
 - Call `supabase.auth.signInWithPassword({ email, password })`
+- On error: set `error` to `error.message`, clear `submitting`
 - On success: `navigate('/')`
-- On error: display the error message from Supabase
-- Show a loading state on the button while the request is in flight
-- Redirect to `/` if already authenticated (check `session` from `useAuth()`)
+- Layout: centered Card on `bg-green-50`, title "Groundwork", subtitle "Sign in to continue"
 
-State: `email`, `password`, `error: string | null`, `loading: boolean`
-
-Layout: centered card on a green-tinted background. Use the Card component. Title "Groundwork". Subtitle "Sign in to continue".
-
-### 4. `src/App.tsx`
-
-Wrap the entire router output in `<AuthProvider>`. Wrap each protected route's element in `<ProtectedRoute>`:
+### `src/App.tsx`
 
 ```tsx
-import { AuthProvider } from '@/lib/auth'
-import ProtectedRoute from '@/components/ProtectedRoute'
-
-// /login stays unwrapped
-// All others:
-<Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-// repeat for all protected routes
+<AuthProvider>
+  <BrowserRouter>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      {/* repeat for all protected routes */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  </BrowserRouter>
+</AuthProvider>
 ```
 
 ## Done when
