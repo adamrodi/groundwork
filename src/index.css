@@ -4,26 +4,67 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   DESIGN SYSTEM: DEAD SIMPLE TOOL
+   ─────────────────────────────────────────────────────────────────────────────
+
+   The one design direction for this app. Anti-aesthetic as aesthetic.
+   Basecamp / HEY energy. Radical clarity.
+
+   TYPOGRAPHY
+   - Font: system font stack (San Francisco on iOS/macOS, Segoe UI on Windows)
+   - Display: Barlow Condensed 900 — logo / wordmark only (Login page)
+   - Mono: DM Mono — numeric data, amounts, invoice numbers
+   - Body: 15px / font-normal (400)
+   - Labels: text-xs (12px) / font-semibold (600)
+   - Stats / hero numbers: text-2xl or larger / font-semibold
+   - NO custom letter-spacing. NO uppercase transforms. NO tracking utilities.
+
+   COLORS
+   - Primary accent: #16a34a (Tailwind green-600) — the only non-neutral color
+   - Success: #22c55e  — use for "complete", "paid"
+   - Warning: #f59e0b  — use for "pending", "sent", "outstanding"
+   - Danger:  #ef4444  — use for errors, overdue, destructive actions
+   - All other color via semantic tokens below (background, card, border, etc.)
+
+   DARK MODE
+   - bg:     #0a0a0a   card: #141414   border: #2a2a2a
+   - text:   #f5f5f5   muted: ~#737373
+
+   LIGHT MODE
+   - bg:     #ffffff   card: #f9f9f9   border: #e5e5e5
+   - text:   #0a0a0a   muted: ~#6b7280
+
+   RADIUS
+   - Default: 0.375rem. Keep it. No sharp edges, no over-rounded pills.
+
+   HOW TO APPLY
+   - Use bg-background / bg-card for surfaces
+   - Use text-foreground / text-muted-foreground for text hierarchy
+   - Use border-border for dividers and outlines
+   - Use text-primary / bg-primary for the green accent
+   - Use the status colors via inline style or add --color-success/warning/danger
+     as Tailwind color utilities in tailwind.config if needed
+   ───────────────────────────────────────────────────────────────────────────── */
+
 @theme {
   /* FONTS */
   --font-display: 'Barlow Condensed', sans-serif;
-  --font-sans: 'DM Mono', monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
   --font-mono: 'DM Mono', monospace;
 
-  /* PROJECT COLORS — dark forest-green palette.
-     These are overridden at runtime by @theme inline {} below,
-     which reads from :root CSS variables. Update :root to change colors. */
-  --color-background: oklch(0.11 0.025 148);
-  --color-foreground: oklch(0.95 0.018 148);
-  --color-primary: oklch(0.79 0.21 148);
-  --color-primary-foreground: oklch(0.11 0.025 148);
-  --color-muted: oklch(0.18 0.03 148);
-  --color-muted-foreground: oklch(0.55 0.02 148);
-  --color-border: oklch(1 0 0 / 9%);
-  --color-input: oklch(1 0 0 / 9%);
-  --color-ring: oklch(0.79 0.21 148);
-  --color-card: oklch(0.15 0.03 148);
-  --color-card-foreground: oklch(0.95 0.018 148);
+  /* Base color tokens (dark mode values as fallback in @theme) */
+  --color-background: oklch(0.07 0 0);
+  --color-foreground: oklch(0.96 0 0);
+  --color-primary: oklch(0.53 0.15 148);
+  --color-primary-foreground: oklch(0.07 0 0);
+  --color-muted: oklch(0.14 0 0);
+  --color-muted-foreground: oklch(0.55 0 0);
+  --color-border: oklch(0.21 0 0);
+  --color-input: oklch(0.21 0 0);
+  --color-ring: oklch(0.53 0.15 148);
+  --color-card: oklch(0.11 0 0);
+  --color-card-foreground: oklch(0.96 0 0);
   --radius: 0.375rem;
 }
 
@@ -36,12 +77,13 @@ body {
   margin: 0;
   background-color: var(--color-background);
   color: var(--color-foreground);
-  font-family: 'DM Mono', monospace;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  font-size: 15px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Fix browser autofill background on dark theme */
+/* Fix browser autofill background */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
@@ -51,32 +93,6 @@ input:-webkit-autofill:focus {
   transition: background-color 5000s ease-in-out 0s;
 }
 
-/* Entrance animation for page content */
-@keyframes gw-enter {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* Pulsing glow for status indicators — uses var(--ring) so it follows the active theme */
-@keyframes pulse-glow {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 color-mix(in oklch, var(--ring) 50%, transparent); }
-  50%       { opacity: 0.65; box-shadow: 0 0 0 5px color-mix(in oklch, var(--ring) 0%, transparent); }
-}
-
-/* Line-draw from left — used for dividers */
-@keyframes gw-grow-x {
-  from { transform: scaleX(0); }
-  to   { transform: scaleX(1); }
-}
-
-/* Radial glow — Login page atmosphere. Uses var(--primary) so it follows the active theme */
-.gw-radial-glow {
-  background: radial-gradient(
-    ellipse 90% 70% at 50% 55%,
-    color-mix(in oklch, var(--primary) 20%, transparent) 0%,
-    transparent 65%
-  );
-}
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -119,36 +135,38 @@ input:-webkit-autofill:focus {
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   LIGHT MODE (default — no class on <html>)
+   ───────────────────────────────────────────────────────────────────────────── */
 :root {
   --radius: 0.375rem;
 
-  /* Dark forest-green palette — edit these to change the global theme */
-  --background: oklch(0.11 0.025 148);
-  --foreground: oklch(0.95 0.018 148);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.07 0 0);
 
-  --card: oklch(0.15 0.03 148);
-  --card-foreground: oklch(0.95 0.018 148);
+  --card: oklch(0.97 0 0);
+  --card-foreground: oklch(0.07 0 0);
 
-  --popover: oklch(0.15 0.03 148);
-  --popover-foreground: oklch(0.95 0.018 148);
+  --popover: oklch(0.97 0 0);
+  --popover-foreground: oklch(0.07 0 0);
 
-  --primary: oklch(0.79 0.21 148);
-  --primary-foreground: oklch(0.11 0.025 148);
+  --primary: oklch(0.53 0.15 148);
+  --primary-foreground: oklch(1 0 0);
 
-  --secondary: oklch(0.20 0.03 148);
-  --secondary-foreground: oklch(0.95 0.018 148);
+  --secondary: oklch(0.93 0 0);
+  --secondary-foreground: oklch(0.07 0 0);
 
-  --muted: oklch(0.18 0.03 148);
-  --muted-foreground: oklch(0.55 0.02 148);
+  --muted: oklch(0.95 0 0);
+  --muted-foreground: oklch(0.45 0 0);
 
-  --accent: oklch(0.20 0.03 148);
-  --accent-foreground: oklch(0.95 0.018 148);
+  --accent: oklch(0.93 0 0);
+  --accent-foreground: oklch(0.07 0 0);
 
-  --destructive: oklch(0.65 0.22 25);
+  --destructive: oklch(0.63 0.22 25);
 
-  --border: oklch(1 0 0 / 9%);
-  --input: oklch(1 0 0 / 9%);
-  --ring: oklch(0.79 0.21 148);
+  --border: oklch(0.90 0 0);
+  --input: oklch(0.90 0 0);
+  --ring: oklch(0.53 0.15 148);
 
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
@@ -156,37 +174,61 @@ input:-webkit-autofill:focus {
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
 
-  --sidebar: oklch(0.15 0.03 148);
-  --sidebar-foreground: oklch(0.95 0.018 148);
-  --sidebar-primary: oklch(0.79 0.21 148);
-  --sidebar-primary-foreground: oklch(0.11 0.025 148);
-  --sidebar-accent: oklch(0.20 0.03 148);
-  --sidebar-accent-foreground: oklch(0.95 0.018 148);
-  --sidebar-border: oklch(1 0 0 / 9%);
-  --sidebar-ring: oklch(0.79 0.21 148);
+  --sidebar: oklch(0.97 0 0);
+  --sidebar-foreground: oklch(0.07 0 0);
+  --sidebar-primary: oklch(0.53 0.15 148);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.93 0 0);
+  --sidebar-accent-foreground: oklch(0.07 0 0);
+  --sidebar-border: oklch(0.90 0 0);
+  --sidebar-ring: oklch(0.53 0.15 148);
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   DARK MODE (.dark class on <html>, toggled by ColorModeProvider)
+   ───────────────────────────────────────────────────────────────────────────── */
 .dark {
-  /* App is permanently dark — .dark class is not toggled.
-     Kept here in case shadcn components reference it. */
-  --background: oklch(0.11 0.025 148);
-  --foreground: oklch(0.95 0.018 148);
-  --card: oklch(0.15 0.03 148);
-  --card-foreground: oklch(0.95 0.018 148);
-  --popover: oklch(0.15 0.03 148);
-  --popover-foreground: oklch(0.95 0.018 148);
-  --primary: oklch(0.79 0.21 148);
-  --primary-foreground: oklch(0.11 0.025 148);
-  --secondary: oklch(0.20 0.03 148);
-  --secondary-foreground: oklch(0.95 0.018 148);
-  --muted: oklch(0.18 0.03 148);
-  --muted-foreground: oklch(0.55 0.02 148);
-  --accent: oklch(0.20 0.03 148);
-  --accent-foreground: oklch(0.95 0.018 148);
+  --background: oklch(0.07 0 0);
+  --foreground: oklch(0.96 0 0);
+
+  --card: oklch(0.11 0 0);
+  --card-foreground: oklch(0.96 0 0);
+
+  --popover: oklch(0.11 0 0);
+  --popover-foreground: oklch(0.96 0 0);
+
+  --primary: oklch(0.53 0.15 148);
+  --primary-foreground: oklch(0.07 0 0);
+
+  --secondary: oklch(0.17 0 0);
+  --secondary-foreground: oklch(0.96 0 0);
+
+  --muted: oklch(0.14 0 0);
+  --muted-foreground: oklch(0.55 0 0);
+
+  --accent: oklch(0.17 0 0);
+  --accent-foreground: oklch(0.96 0 0);
+
   --destructive: oklch(0.65 0.22 25);
-  --border: oklch(1 0 0 / 9%);
-  --input: oklch(1 0 0 / 9%);
-  --ring: oklch(0.79 0.21 148);
+
+  --border: oklch(0.21 0 0);
+  --input: oklch(0.21 0 0);
+  --ring: oklch(0.53 0.15 148);
+
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+
+  --sidebar: oklch(0.11 0 0);
+  --sidebar-foreground: oklch(0.96 0 0);
+  --sidebar-primary: oklch(0.53 0.15 148);
+  --sidebar-primary-foreground: oklch(0.07 0 0);
+  --sidebar-accent: oklch(0.17 0 0);
+  --sidebar-accent-foreground: oklch(0.96 0 0);
+  --sidebar-border: oklch(0.21 0 0);
+  --sidebar-ring: oklch(0.53 0.15 148);
 }
 
 @layer base {
@@ -196,217 +238,4 @@ input:-webkit-autofill:focus {
   body {
     @apply bg-background text-foreground;
   }
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   THEMES
-   Each block overrides the CSS custom properties defined in :root above.
-   Applied by setting data-theme="<id>" on <html> via ThemeProvider.
-
-   Mechanism: [data-theme="X"] and :root have equal specificity (0-1-0).
-   Source order wins — these blocks come last, so they always take effect.
-   Tailwind utilities resolve via the chain:
-     bg-primary → var(--color-primary) → var(--primary) → value here
-   ───────────────────────────────────────────────────────────────────────────── */
-
-[data-theme="field-ops"] {
-  --radius: 0rem;
-  --background:                oklch(0.09 0.022 148);
-  --foreground:                oklch(0.95 0.018 148);
-  --card:                      oklch(0.13 0.028 148);
-  --card-foreground:           oklch(0.95 0.018 148);
-  --popover:                   oklch(0.13 0.028 148);
-  --popover-foreground:        oklch(0.95 0.018 148);
-  --primary:                   oklch(0.82 0.23 148);
-  --primary-foreground:        oklch(0.09 0.022 148);
-  --secondary:                 oklch(0.17 0.028 148);
-  --secondary-foreground:      oklch(0.95 0.018 148);
-  --muted:                     oklch(0.15 0.025 148);
-  --muted-foreground:          oklch(0.52 0.018 148);
-  --accent:                    oklch(0.17 0.028 148);
-  --accent-foreground:         oklch(0.95 0.018 148);
-  --destructive:               oklch(0.65 0.22 25);
-  --border:                    oklch(1 0 0 / 8%);
-  --input:                     oklch(1 0 0 / 8%);
-  --ring:                      oklch(0.82 0.23 148);
-  --sidebar:                   oklch(0.13 0.028 148);
-  --sidebar-foreground:        oklch(0.95 0.018 148);
-  --sidebar-primary:           oklch(0.82 0.23 148);
-  --sidebar-primary-foreground: oklch(0.09 0.022 148);
-  --sidebar-accent:            oklch(0.17 0.028 148);
-  --sidebar-accent-foreground: oklch(0.95 0.018 148);
-  --sidebar-border:            oklch(1 0 0 / 8%);
-  --sidebar-ring:              oklch(0.82 0.23 148);
-}
-
-[data-theme="terrain-scan"] {
-  --radius: 0.125rem;
-  --background:                oklch(0.10 0.022 185);
-  --foreground:                oklch(0.93 0.016 185);
-  --card:                      oklch(0.14 0.028 185);
-  --card-foreground:           oklch(0.93 0.016 185);
-  --popover:                   oklch(0.14 0.028 185);
-  --popover-foreground:        oklch(0.93 0.016 185);
-  --primary:                   oklch(0.78 0.18 185);
-  --primary-foreground:        oklch(0.10 0.022 185);
-  --secondary:                 oklch(0.19 0.028 185);
-  --secondary-foreground:      oklch(0.93 0.016 185);
-  --muted:                     oklch(0.17 0.025 185);
-  --muted-foreground:          oklch(0.53 0.018 185);
-  --accent:                    oklch(0.19 0.028 185);
-  --accent-foreground:         oklch(0.93 0.016 185);
-  --destructive:               oklch(0.65 0.22 25);
-  --border:                    oklch(1 0 0 / 9%);
-  --input:                     oklch(1 0 0 / 9%);
-  --ring:                      oklch(0.78 0.18 185);
-  --sidebar:                   oklch(0.14 0.028 185);
-  --sidebar-foreground:        oklch(0.93 0.016 185);
-  --sidebar-primary:           oklch(0.78 0.18 185);
-  --sidebar-primary-foreground: oklch(0.10 0.022 185);
-  --sidebar-accent:            oklch(0.19 0.028 185);
-  --sidebar-accent-foreground: oklch(0.93 0.016 185);
-  --sidebar-border:            oklch(1 0 0 / 9%);
-  --sidebar-ring:              oklch(0.78 0.18 185);
-}
-
-[data-theme="brutalist"] {
-  --radius: 0rem;
-  --background:                oklch(0.0 0 0);
-  --foreground:                oklch(1.0 0 0);
-  --card:                      oklch(0.08 0 0);
-  --card-foreground:           oklch(1.0 0 0);
-  --popover:                   oklch(0.08 0 0);
-  --popover-foreground:        oklch(1.0 0 0);
-  --primary:                   oklch(1.0 0 0);
-  --primary-foreground:        oklch(0.0 0 0);
-  --secondary:                 oklch(0.12 0 0);
-  --secondary-foreground:      oklch(1.0 0 0);
-  --muted:                     oklch(0.10 0 0);
-  --muted-foreground:          oklch(0.55 0 0);
-  --accent:                    oklch(0.12 0 0);
-  --accent-foreground:         oklch(1.0 0 0);
-  --destructive:               oklch(0.65 0.22 25);
-  --border:                    oklch(1 0 0 / 15%);
-  --input:                     oklch(1 0 0 / 15%);
-  --ring:                      oklch(1.0 0 0);
-  --sidebar:                   oklch(0.08 0 0);
-  --sidebar-foreground:        oklch(1.0 0 0);
-  --sidebar-primary:           oklch(1.0 0 0);
-  --sidebar-primary-foreground: oklch(0.0 0 0);
-  --sidebar-accent:            oklch(0.12 0 0);
-  --sidebar-accent-foreground: oklch(1.0 0 0);
-  --sidebar-border:            oklch(1 0 0 / 15%);
-  --sidebar-ring:              oklch(1.0 0 0);
-}
-
-/* Kill all motion in brutalist theme */
-[data-theme="brutalist"] * {
-  animation-duration: 0.001ms !important;
-  transition-duration: 0.001ms !important;
-  animation-delay: 0.001ms !important;
-}
-
-[data-theme="carbon-night"] {
-  --radius: 0.375rem;
-  --background:                oklch(0.10 0.015 245);
-  --foreground:                oklch(0.93 0.010 245);
-  --card:                      oklch(0.14 0.018 245);
-  --card-foreground:           oklch(0.93 0.010 245);
-  --popover:                   oklch(0.14 0.018 245);
-  --popover-foreground:        oklch(0.93 0.010 245);
-  --primary:                   oklch(0.76 0.17 70);
-  --primary-foreground:        oklch(0.10 0.015 245);
-  --secondary:                 oklch(0.18 0.018 245);
-  --secondary-foreground:      oklch(0.93 0.010 245);
-  --muted:                     oklch(0.16 0.015 245);
-  --muted-foreground:          oklch(0.52 0.010 245);
-  --accent:                    oklch(0.18 0.018 245);
-  --accent-foreground:         oklch(0.93 0.010 245);
-  --destructive:               oklch(0.65 0.22 25);
-  --border:                    oklch(1 0 0 / 9%);
-  --input:                     oklch(1 0 0 / 9%);
-  --ring:                      oklch(0.76 0.17 70);
-  --sidebar:                   oklch(0.14 0.018 245);
-  --sidebar-foreground:        oklch(0.93 0.010 245);
-  --sidebar-primary:           oklch(0.76 0.17 70);
-  --sidebar-primary-foreground: oklch(0.10 0.015 245);
-  --sidebar-accent:            oklch(0.18 0.018 245);
-  --sidebar-accent-foreground: oklch(0.93 0.010 245);
-  --sidebar-border:            oklch(1 0 0 / 9%);
-  --sidebar-ring:              oklch(0.76 0.17 70);
-}
-
-[data-theme="weathered-signal"] {
-  --radius: 0rem;
-  --background:                oklch(0.10 0.020 145);
-  --foreground:                oklch(0.92 0.015 80);
-  --card:                      oklch(0.14 0.022 145);
-  --card-foreground:           oklch(0.92 0.015 80);
-  --popover:                   oklch(0.14 0.022 145);
-  --popover-foreground:        oklch(0.92 0.015 80);
-  --primary:                   oklch(0.89 0.18 80);
-  --primary-foreground:        oklch(0.10 0.020 145);
-  --secondary:                 oklch(0.18 0.022 145);
-  --secondary-foreground:      oklch(0.92 0.015 80);
-  --muted:                     oklch(0.16 0.020 145);
-  --muted-foreground:          oklch(0.50 0.012 145);
-  --accent:                    oklch(0.18 0.022 145);
-  --accent-foreground:         oklch(0.92 0.015 80);
-  --destructive:               oklch(0.65 0.22 25);
-  --border:                    oklch(1 0 0 / 8%);
-  --input:                     oklch(1 0 0 / 8%);
-  --ring:                      oklch(0.89 0.18 80);
-  --sidebar:                   oklch(0.14 0.022 145);
-  --sidebar-foreground:        oklch(0.92 0.015 80);
-  --sidebar-primary:           oklch(0.89 0.18 80);
-  --sidebar-primary-foreground: oklch(0.10 0.020 145);
-  --sidebar-accent:            oklch(0.18 0.022 145);
-  --sidebar-accent-foreground: oklch(0.92 0.015 80);
-  --sidebar-border:            oklch(1 0 0 / 8%);
-  --sidebar-ring:              oklch(0.89 0.18 80);
-}
-
-[data-theme="veilance"] {
-  --radius: 0.625rem;
-  --background:                oklch(0.09 0.016 240);
-  --foreground:                oklch(0.93 0.010 240);
-  --card:                      oklch(0.13 0.018 240);
-  --card-foreground:           oklch(0.93 0.010 240);
-  --popover:                   oklch(0.13 0.018 240);
-  --popover-foreground:        oklch(0.93 0.010 240);
-  --primary:                   oklch(0.76 0.19 162);
-  --primary-foreground:        oklch(0.09 0.016 240);
-  --secondary:                 oklch(0.17 0.018 240);
-  --secondary-foreground:      oklch(0.93 0.010 240);
-  --muted:                     oklch(0.15 0.016 240);
-  --muted-foreground:          oklch(0.50 0.010 240);
-  --accent:                    oklch(0.17 0.018 240);
-  --accent-foreground:         oklch(0.93 0.010 240);
-  --destructive:               oklch(0.65 0.22 25);
-  --border:                    oklch(1 0 0 / 8%);
-  --input:                     oklch(1 0 0 / 8%);
-  --ring:                      oklch(0.76 0.19 162);
-  --sidebar:                   oklch(0.13 0.018 240);
-  --sidebar-foreground:        oklch(0.93 0.010 240);
-  --sidebar-primary:           oklch(0.76 0.19 162);
-  --sidebar-primary-foreground: oklch(0.09 0.016 240);
-  --sidebar-accent:            oklch(0.17 0.018 240);
-  --sidebar-accent-foreground: oklch(0.93 0.010 240);
-  --sidebar-border:            oklch(1 0 0 / 8%);
-  --sidebar-ring:              oklch(0.76 0.19 162);
-}
-
-/* Veilance: override to system font — compile-time .font-display utility
-   has higher initial specificity, so we use a more specific selector here */
-[data-theme="veilance"] body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-  font-weight: 300;
-  letter-spacing: 0.02em;
-}
-
-[data-theme="veilance"] .font-display {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-  font-weight: 300;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
 }
