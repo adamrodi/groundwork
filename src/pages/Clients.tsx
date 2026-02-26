@@ -24,12 +24,17 @@ export default function Clients() {
   const { user } = useAuth()
   const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
+  const [fetchError, setFetchError] = useState<string | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [saving, setSaving] = useState(false)
 
   async function fetchClients() {
-    const { data } = await supabase.from('clients').select('*').order('name')
-    setClients((data as Client[]) ?? [])
+    const { data, error } = await supabase.from('clients').select('*').order('name')
+    if (error) {
+      setFetchError('Failed to load clients.')
+    } else {
+      setClients((data as Client[]) ?? [])
+    }
   }
 
   useEffect(() => {
@@ -59,6 +64,8 @@ export default function Clients() {
 
       {loading ? (
         <p className="text-muted-foreground">Loading…</p>
+      ) : fetchError ? (
+        <p className="text-destructive">{fetchError}</p>
       ) : clients.length === 0 ? (
         <p className="text-muted-foreground">
           No clients yet.{' '}
