@@ -15,18 +15,37 @@ export default function Login() {
   // Crosshair + coordinates are field-survey decorations — hide on themes where they clash
   const showDecorations = !['brutalist', 'carbon-night', 'veilance'].includes(theme)
 
+  const [mode, setMode] = useState<'signin' | 'signup'>('signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [signupDone, setSignupDone] = useState(false)
 
   if (loading) return null
   if (session) return <Navigate to="/" replace />
+
+  function switchMode(next: 'signin' | 'signup') {
+    setMode(next)
+    setError(null)
+    setSignupDone(false)
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setError(null)
     setSubmitting(true)
+
+    if (mode === 'signup') {
+      const { error } = await supabase.auth.signUp({ email, password })
+      if (error) {
+        setError(error.message)
+      } else {
+        setSignupDone(true)
+      }
+      setSubmitting(false)
+      return
+    }
 
     const { error } = await supabase.auth.signInWithPassword({ email, password })
 
@@ -81,7 +100,7 @@ export default function Login() {
         >
           <span className="size-1.5 rounded-full bg-primary shrink-0 [animation:pulse-glow_2.8s_ease-in-out_infinite]" />
           <span className="text-[0.5625rem] tracking-[0.22em] uppercase text-primary">
-            Field Ops · Auth
+            {mode === 'signin' ? 'Field Ops · Auth' : 'Field Ops · Register'}
           </span>
         </div>
 
@@ -102,65 +121,107 @@ export default function Login() {
           style={{ animation: 'gw-grow-x 0.9s cubic-bezier(0.16,1,0.3,1) 0.3s both' }}
         />
 
-        <form
-          onSubmit={handleSubmit}
-          style={{ animation: 'gw-enter 0.6s cubic-bezier(0.16,1,0.3,1) 0.48s both' }}
-        >
-          <div className="mb-7">
-            <Label
-              htmlFor="email"
-              className="text-[0.5625rem] tracking-[0.22em] uppercase text-muted-foreground mb-2.5 flex items-center gap-2.5"
-            >
-              <span className="text-primary/40">01</span>
-              Email Address
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              autoComplete="email"
-              required
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="border-0 border-b rounded-none px-0 h-auto py-2 shadow-none focus-visible:ring-0 focus-visible:border-primary placeholder:text-foreground/10 transition-colors duration-300"
-            />
-          </div>
-
-          <div className="mb-7">
-            <Label
-              htmlFor="password"
-              className="text-[0.5625rem] tracking-[0.22em] uppercase text-muted-foreground mb-2.5 flex items-center gap-2.5"
-            >
-              <span className="text-primary/40">02</span>
-              Password
-            </Label>
-            <Input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="border-0 border-b rounded-none px-0 h-auto py-2 shadow-none focus-visible:ring-0 focus-visible:border-primary placeholder:text-foreground/10 transition-colors duration-300"
-            />
-          </div>
-
-          {error && (
-            <p className="text-xs text-destructive mb-6 flex items-center gap-2">
-              <span className="shrink-0 text-destructive/60">!</span>
-              {error}
+        {signupDone ? (
+          <div style={{ animation: 'gw-enter 0.5s cubic-bezier(0.16,1,0.3,1) both' }}>
+            <p className="text-sm text-foreground/70 mb-4">
+              Check your email for a confirmation link, then come back and sign in.
             </p>
-          )}
-
-          <Button
-            type="submit"
-            disabled={submitting}
-            className="w-full mt-9 h-12 rounded-none text-xs tracking-[0.16em] uppercase"
+            <button
+              onClick={() => switchMode('signin')}
+              className="text-[0.5625rem] tracking-[0.16em] uppercase text-primary hover:opacity-70 transition-opacity"
+            >
+              ← Back to sign in
+            </button>
+          </div>
+        ) : (
+          <form
+            onSubmit={handleSubmit}
+            style={{ animation: 'gw-enter 0.6s cubic-bezier(0.16,1,0.3,1) 0.48s both' }}
           >
-            {submitting ? 'Authenticating…' : 'Sign In →'}
-          </Button>
-        </form>
+            <div className="mb-7">
+              <Label
+                htmlFor="email"
+                className="text-[0.5625rem] tracking-[0.22em] uppercase text-muted-foreground mb-2.5 flex items-center gap-2.5"
+              >
+                <span className="text-primary/40">01</span>
+                Email Address
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                autoComplete="email"
+                required
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="border-0 border-b rounded-none px-0 h-auto py-2 shadow-none focus-visible:ring-0 focus-visible:border-primary placeholder:text-foreground/10 transition-colors duration-300"
+              />
+            </div>
+
+            <div className="mb-7">
+              <Label
+                htmlFor="password"
+                className="text-[0.5625rem] tracking-[0.22em] uppercase text-muted-foreground mb-2.5 flex items-center gap-2.5"
+              >
+                <span className="text-primary/40">02</span>
+                Password
+              </Label>
+              <Input
+                id="password"
+                type="password"
+                autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                required
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="border-0 border-b rounded-none px-0 h-auto py-2 shadow-none focus-visible:ring-0 focus-visible:border-primary placeholder:text-foreground/10 transition-colors duration-300"
+              />
+            </div>
+
+            {error && (
+              <p className="text-xs text-destructive mb-6 flex items-center gap-2">
+                <span className="shrink-0 text-destructive/60">!</span>
+                {error}
+              </p>
+            )}
+
+            <Button
+              type="submit"
+              disabled={submitting}
+              className="w-full mt-9 h-12 rounded-none text-xs tracking-[0.16em] uppercase"
+            >
+              {submitting
+                ? mode === 'signup' ? 'Creating account…' : 'Authenticating…'
+                : mode === 'signup' ? 'Create Account →' : 'Sign In →'}
+            </Button>
+
+            <p className="text-center mt-6 text-[0.5625rem] tracking-[0.12em] uppercase text-muted-foreground/40">
+              {mode === 'signin' ? (
+                <>
+                  No account?{' '}
+                  <button
+                    type="button"
+                    onClick={() => switchMode('signup')}
+                    className="text-primary/60 hover:text-primary transition-colors"
+                  >
+                    Create one
+                  </button>
+                </>
+              ) : (
+                <>
+                  Have an account?{' '}
+                  <button
+                    type="button"
+                    onClick={() => switchMode('signin')}
+                    className="text-primary/60 hover:text-primary transition-colors"
+                  >
+                    Sign in
+                  </button>
+                </>
+              )}
+            </p>
+          </form>
+        )}
 
         <p
           className="text-[0.5625rem] tracking-[0.16em] uppercase text-muted-foreground/20 mt-12"
