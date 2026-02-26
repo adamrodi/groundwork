@@ -102,7 +102,7 @@ Each phase has a detailed spec in `docs/`. Start a session by reading CLAUDE.md 
 | --- | --- | --- |
 | 1. Auth | [`docs/01-auth.md`](docs/01-auth.md) | complete |
 | 2. Clients | [`docs/02-clients.md`](docs/02-clients.md) | complete |
-| 3. Jobs | [`docs/03-jobs.md`](docs/03-jobs.md) | not started |
+| 3. Jobs | [`docs/03-jobs.md`](docs/03-jobs.md) | complete |
 | 4. Invoices | [`docs/04-invoices.md`](docs/04-invoices.md) | not started |
 | 5. Payments | [`docs/05-payments.md`](docs/05-payments.md) | not started |
 | 6. Dashboard | [`docs/06-dashboard.md`](docs/06-dashboard.md) | not started |
