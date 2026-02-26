@@ -2,10 +2,18 @@ import { useState } from 'react'
 import { useNavigate, Navigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/auth'
+import { useTheme } from '@/lib/theme'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 export default function Login() {
   const { session, loading } = useAuth()
+  const { theme } = useTheme()
   const navigate = useNavigate()
+
+  // Crosshair + coordinates are field-survey decorations — hide on themes where they clash
+  const showDecorations = !['brutalist', 'carbon-night', 'veilance'].includes(theme)
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -31,247 +39,137 @@ export default function Login() {
   }
 
   return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=DM+Mono:wght@400;500&display=swap');
+    <div className="min-h-svh flex items-center justify-center px-8 py-16 relative overflow-hidden">
 
-        .gw-root {
-          min-height: 100svh;
-          background-color: #0b1509;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 2.5rem 2rem;
-          position: relative;
-          overflow: hidden;
-        }
+      {/* Radial glow — color follows theme via .gw-radial-glow CSS class */}
+      <div className="fixed inset-0 pointer-events-none gw-radial-glow" />
 
-        .gw-root::before {
-          content: '';
-          position: fixed;
-          inset: 0;
-          background: radial-gradient(ellipse 90% 70% at 50% 55%, rgba(18, 65, 18, 0.5) 0%, transparent 65%);
-          pointer-events: none;
-        }
+      {/* Top-left crosshair — only on field-survey themes */}
+      {showDecorations && (
+        <div
+          className="fixed top-6 left-6 pointer-events-none"
+          style={{ animation: 'gw-enter 1s cubic-bezier(0.16,1,0.3,1) 0.75s both' }}
+          aria-hidden="true"
+        >
+          <div className="relative size-5 opacity-[0.22]">
+            <div className="absolute top-1/2 left-0 right-0 h-px bg-primary -translate-y-px" />
+            <div className="absolute left-1/2 top-0 bottom-0 w-px bg-primary -translate-x-px" />
+            <div className="absolute inset-[3px] rounded-full border border-primary" />
+          </div>
+        </div>
+      )}
 
-        .gw-inner {
-          position: relative;
-          z-index: 2;
-          width: 100%;
-          max-width: 340px;
-          animation: gw-enter 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
+      {/* Bottom-right field coordinates — only on field-survey themes */}
+      {showDecorations && (
+        <div
+          className="fixed bottom-6 right-6 text-right pointer-events-none"
+          style={{ animation: 'gw-enter 1s cubic-bezier(0.16,1,0.3,1) 0.9s both' }}
+          aria-hidden="true"
+        >
+          <p className="text-[0.4375rem] tracking-[0.18em] uppercase text-muted-foreground/20 leading-loose">
+            43.6532° N<br />79.3832° W
+          </p>
+        </div>
+      )}
 
-        @keyframes gw-enter {
-          from { opacity: 0; transform: translateY(14px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
+      <div className="relative z-10 w-full max-w-[340px]">
 
-        /* — Eyebrow — */
-        .gw-eyebrow {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          margin-bottom: 0.875rem;
-        }
+        {/* Eyebrow */}
+        <div
+          className="flex items-center gap-2 mb-3.5"
+          style={{ animation: 'gw-enter 0.55s cubic-bezier(0.16,1,0.3,1) 0.05s both' }}
+        >
+          <span className="size-1.5 rounded-full bg-primary shrink-0 [animation:pulse-glow_2.8s_ease-in-out_infinite]" />
+          <span className="text-[0.5625rem] tracking-[0.22em] uppercase text-primary">
+            Field Ops · Auth
+          </span>
+        </div>
 
-        .gw-dot {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: #4ade80;
-          flex-shrink: 0;
-          animation: gw-pulse 2.8s ease-in-out infinite;
-        }
+        {/* Title */}
+        <h1
+          className="font-display font-black leading-[0.86] tracking-[-0.01em] text-foreground mb-11 select-none"
+          style={{
+            fontSize: 'clamp(4rem, 21vw, 6.25rem)',
+            animation: 'gw-enter 0.65s cubic-bezier(0.16,1,0.3,1) 0.12s both',
+          }}
+        >
+          GROUND<br />WORK
+        </h1>
 
-        @keyframes gw-pulse {
-          0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.5); }
-          50%       { opacity: 0.65; box-shadow: 0 0 0 5px rgba(74, 222, 128, 0); }
-        }
+        {/* Divider — draws in from left */}
+        <div
+          className="w-full h-px bg-border mb-9 origin-left"
+          style={{ animation: 'gw-grow-x 0.9s cubic-bezier(0.16,1,0.3,1) 0.3s both' }}
+        />
 
-        .gw-eyebrow-label {
-          font-family: 'DM Mono', monospace;
-          font-size: 0.625rem;
-          letter-spacing: 0.22em;
-          text-transform: uppercase;
-          color: #4ade80;
-        }
-
-        /* — Title — */
-        .gw-title {
-          font-family: 'Barlow Condensed', sans-serif;
-          font-weight: 900;
-          font-size: clamp(4rem, 21vw, 6.25rem);
-          line-height: 0.86;
-          letter-spacing: -0.01em;
-          color: #eef3eb;
-          margin-bottom: 2.75rem;
-          user-select: none;
-        }
-
-        /* — Divider — */
-        .gw-rule {
-          width: 100%;
-          height: 1px;
-          background: rgba(255, 255, 255, 0.07);
-          margin-bottom: 2.25rem;
-        }
-
-        /* — Fields — */
-        .gw-field {
-          margin-bottom: 1.75rem;
-        }
-
-        .gw-label {
-          display: block;
-          font-family: 'DM Mono', monospace;
-          font-size: 0.5625rem;
-          letter-spacing: 0.22em;
-          text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.3);
-          margin-bottom: 0.6rem;
-        }
-
-        .gw-input {
-          display: block;
-          width: 100%;
-          background: transparent;
-          border: none;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-          border-radius: 0;
-          padding: 0.5rem 0;
-          font-family: 'DM Mono', monospace;
-          font-size: 0.9375rem;
-          color: #eef3eb;
-          outline: none;
-          transition: border-color 0.18s ease;
-          -webkit-appearance: none;
-        }
-
-        .gw-input:focus {
-          border-bottom-color: #4ade80;
-        }
-
-        .gw-input::placeholder {
-          color: rgba(255, 255, 255, 0.1);
-        }
-
-        .gw-input:-webkit-autofill,
-        .gw-input:-webkit-autofill:hover,
-        .gw-input:-webkit-autofill:focus {
-          -webkit-box-shadow: 0 0 0 1000px #0b1509 inset;
-          -webkit-text-fill-color: #eef3eb;
-          caret-color: #eef3eb;
-          transition: background-color 5000s ease-in-out 0s;
-        }
-
-        /* — Error — */
-        .gw-error {
-          font-family: 'DM Mono', monospace;
-          font-size: 0.6875rem;
-          color: #f87171;
-          margin-top: -0.75rem;
-          margin-bottom: 1.5rem;
-          line-height: 1.5;
-        }
-
-        /* — Submit button — */
-        .gw-btn {
-          display: block;
-          width: 100%;
-          margin-top: 2.25rem;
-          padding: 0.9375rem 1.5rem;
-          font-family: 'DM Mono', monospace;
-          font-size: 0.8125rem;
-          font-weight: 500;
-          letter-spacing: 0.16em;
-          text-transform: uppercase;
-          color: #0b1509;
-          background: #4ade80;
-          border: none;
-          border-radius: 0;
-          cursor: pointer;
-          transition: background 0.15s ease, opacity 0.15s ease;
-        }
-
-        .gw-btn:hover:not(:disabled) {
-          background: #86efac;
-        }
-
-        .gw-btn:active:not(:disabled) {
-          background: #22c55e;
-        }
-
-        .gw-btn:disabled {
-          opacity: 0.35;
-          cursor: not-allowed;
-        }
-
-        /* — Footer — */
-        .gw-footer {
-          font-family: 'DM Mono', monospace;
-          font-size: 0.5625rem;
-          letter-spacing: 0.16em;
-          text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.1);
-          margin-top: 3rem;
-        }
-      `}</style>
-
-      <div className="gw-root">
-        <div className="gw-inner">
-
-          <div className="gw-eyebrow">
-            <span className="gw-dot" />
-            <span className="gw-eyebrow-label">Field Operations</span>
+        <form
+          onSubmit={handleSubmit}
+          style={{ animation: 'gw-enter 0.6s cubic-bezier(0.16,1,0.3,1) 0.48s both' }}
+        >
+          <div className="mb-7">
+            <Label
+              htmlFor="email"
+              className="text-[0.5625rem] tracking-[0.22em] uppercase text-muted-foreground mb-2.5 flex items-center gap-2.5"
+            >
+              <span className="text-primary/40">01</span>
+              Email Address
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              autoComplete="email"
+              required
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="border-0 border-b rounded-none px-0 h-auto py-2 shadow-none focus-visible:ring-0 focus-visible:border-primary placeholder:text-foreground/10 transition-colors duration-300"
+            />
           </div>
 
-          <h1 className="gw-title">
-            GROUND<br />WORK
-          </h1>
+          <div className="mb-7">
+            <Label
+              htmlFor="password"
+              className="text-[0.5625rem] tracking-[0.22em] uppercase text-muted-foreground mb-2.5 flex items-center gap-2.5"
+            >
+              <span className="text-primary/40">02</span>
+              Password
+            </Label>
+            <Input
+              id="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="border-0 border-b rounded-none px-0 h-auto py-2 shadow-none focus-visible:ring-0 focus-visible:border-primary placeholder:text-foreground/10 transition-colors duration-300"
+            />
+          </div>
 
-          <div className="gw-rule" />
+          {error && (
+            <p className="text-xs text-destructive mb-6 flex items-center gap-2">
+              <span className="shrink-0 text-destructive/60">!</span>
+              {error}
+            </p>
+          )}
 
-          <form onSubmit={handleSubmit}>
-            <div className="gw-field">
-              <label className="gw-label" htmlFor="email">Email Address</label>
-              <input
-                id="email"
-                type="email"
-                autoComplete="email"
-                required
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="gw-input"
-              />
-            </div>
+          <Button
+            type="submit"
+            disabled={submitting}
+            className="w-full mt-9 h-12 rounded-none text-xs tracking-[0.16em] uppercase"
+          >
+            {submitting ? 'Authenticating…' : 'Sign In →'}
+          </Button>
+        </form>
 
-            <div className="gw-field">
-              <label className="gw-label" htmlFor="password">Password</label>
-              <input
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="gw-input"
-              />
-            </div>
+        <p
+          className="text-[0.5625rem] tracking-[0.16em] uppercase text-muted-foreground/20 mt-12"
+          style={{ animation: 'gw-enter 0.6s cubic-bezier(0.16,1,0.3,1) 0.72s both' }}
+        >
+          Groundwork · v1
+        </p>
 
-            {error && <p className="gw-error">{error}</p>}
-
-            <button type="submit" disabled={submitting} className="gw-btn">
-              {submitting ? 'Signing in…' : 'Sign in'}
-            </button>
-          </form>
-
-          <p className="gw-footer">Groundwork · v1</p>
-
-        </div>
       </div>
-    </>
+    </div>
   )
 }
