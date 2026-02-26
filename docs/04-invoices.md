@@ -1,6 +1,6 @@
 # Phase 4 — Invoices
 
-**Status:** not started
+**Status:** complete (pending RESEND_API_KEY for email send)
 **Prerequisites:** Phase 1 (Auth), Phase 2 (Clients), Phase 3 (Jobs)
 
 ## Goal

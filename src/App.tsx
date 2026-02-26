@@ -11,6 +11,7 @@ import JobNew from '@/pages/JobNew'
 import JobDetail from '@/pages/JobDetail'
 import Invoices from '@/pages/Invoices'
 import InvoiceDetail from '@/pages/InvoiceDetail'
+import InvoicePublic from '@/pages/InvoicePublic'
 import Login from '@/pages/Login'
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
             <Route path="/jobs/:id" element={<ProtectedRoute><JobDetail /></ProtectedRoute>} />
             <Route path="/invoices" element={<ProtectedRoute><Invoices /></ProtectedRoute>} />
             <Route path="/invoices/:id" element={<ProtectedRoute><InvoiceDetail /></ProtectedRoute>} />
+            <Route path="/i/:id" element={<InvoicePublic />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
