@@ -27,6 +27,7 @@ export default function ClientDetail() {
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const [fetchError, setFetchError] = useState<string | null>(null)
   const [editOpen, setEditOpen] = useState(false)
   const [saving, setSaving] = useState(false)
 
@@ -35,11 +36,17 @@ export default function ClientDetail() {
       supabase.from('clients').select('*').eq('id', id).single(),
       supabase.from('jobs').select('*').eq('client_id', id).order('date', { ascending: false }),
     ])
-    if (clientResult.error || !clientResult.data) {
+    if (clientResult.error?.code === 'PGRST116' || !clientResult.data) {
       setNotFound(true)
+    } else if (clientResult.error) {
+      setFetchError('Failed to load client.')
     } else {
       setClient(clientResult.data as Client)
-      setJobs((jobsResult.data as Job[]) ?? [])
+      if (jobsResult.error) {
+        setFetchError('Failed to load jobs.')
+      } else {
+        setJobs((jobsResult.data as Job[]) ?? [])
+      }
     }
   }
 
@@ -52,16 +59,16 @@ export default function ClientDetail() {
     try {
       const { error } = await supabase.from('clients').update(formData).eq('id', id)
       if (error) throw error
-      setLoading(true)
       await fetchData()
       setEditOpen(false)
     } finally {
       setSaving(false)
-      setLoading(false)
     }
   }
 
   if (loading) return <p className="p-6 text-muted-foreground">Loading…</p>
+
+  if (fetchError) return <p className="p-6 text-destructive">{fetchError}</p>
 
   if (notFound) {
     return (

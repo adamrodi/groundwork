@@ -1,9 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from '@/lib/auth'
-import { ThemeProvider } from '@/lib/theme'
+import { ColorModeProvider } from '@/lib/colorMode'
 import ProtectedRoute from '@/components/ProtectedRoute'
-import ThemeBackground from '@/components/ThemeBackground'
-import ThemeSwitcher from '@/components/ThemeSwitcher'
+import ColorModeToggle from '@/components/ColorModeToggle'
 import Dashboard from '@/pages/Dashboard'
 import Clients from '@/pages/Clients'
 import ClientDetail from '@/pages/ClientDetail'
@@ -16,11 +15,10 @@ import Login from '@/pages/Login'
 
 function App() {
   return (
-    <ThemeProvider>
+    <ColorModeProvider>
       <AuthProvider>
         <BrowserRouter>
-          <ThemeBackground />
-          <ThemeSwitcher />
+          <ColorModeToggle />
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
@@ -35,7 +33,7 @@ function App() {
           </Routes>
         </BrowserRouter>
       </AuthProvider>
-    </ThemeProvider>
+    </ColorModeProvider>
   )
 }
 

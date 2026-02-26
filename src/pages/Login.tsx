@@ -2,18 +2,13 @@ import { useState } from 'react'
 import { useNavigate, Navigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/auth'
-import { useTheme } from '@/lib/theme'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { cn } from '@/lib/utils'
 
 export default function Login() {
   const { session, loading } = useAuth()
-  const { theme } = useTheme()
   const navigate = useNavigate()
-
-  // Crosshair + coordinates are field-survey decorations — hide on themes where they clash
-  const showDecorations = !['brutalist', 'carbon-night', 'veilance'].includes(theme)
 
   const [mode, setMode] = useState<'signin' | 'signup'>('signin')
   const [email, setEmail] = useState('')
@@ -48,7 +43,6 @@ export default function Login() {
     }
 
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-
     if (error) {
       setError(error.message)
       setSubmitting(false)
@@ -58,94 +52,44 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-svh flex items-center justify-center px-8 py-16 relative overflow-hidden">
+    <div className="min-h-svh bg-background flex items-center justify-center px-6">
+      <div className="w-full max-w-[340px]">
 
-      {/* Radial glow — color follows theme via .gw-radial-glow CSS class */}
-      <div className="fixed inset-0 pointer-events-none gw-radial-glow" />
-
-      {/* Top-left crosshair — only on field-survey themes */}
-      {showDecorations && (
-        <div
-          className="fixed top-6 left-6 pointer-events-none"
-          style={{ animation: 'gw-enter 1s cubic-bezier(0.16,1,0.3,1) 0.75s both' }}
-          aria-hidden="true"
-        >
-          <div className="relative size-5 opacity-[0.22]">
-            <div className="absolute top-1/2 left-0 right-0 h-px bg-primary -translate-y-px" />
-            <div className="absolute left-1/2 top-0 bottom-0 w-px bg-primary -translate-x-px" />
-            <div className="absolute inset-[3px] rounded-full border border-primary" />
-          </div>
-        </div>
-      )}
-
-      {/* Bottom-right field coordinates — only on field-survey themes */}
-      {showDecorations && (
-        <div
-          className="fixed bottom-6 right-6 text-right pointer-events-none"
-          style={{ animation: 'gw-enter 1s cubic-bezier(0.16,1,0.3,1) 0.9s both' }}
-          aria-hidden="true"
-        >
-          <p className="text-[0.4375rem] tracking-[0.18em] uppercase text-muted-foreground/20 leading-loose">
-            43.6532° N<br />79.3832° W
+        {/* Wordmark block */}
+        <div className="mb-10">
+          <h1 className="font-display font-black text-foreground leading-none select-none" style={{ fontSize: '3.25rem' }}>
+            GROUNDWORK
+          </h1>
+          <p className="font-mono text-xs text-muted-foreground mt-2.5">
+            Landscaping business tools
           </p>
         </div>
-      )}
 
-      <div className="relative z-10 w-full max-w-[340px]">
-
-        {/* Eyebrow */}
-        <div
-          className="flex items-center gap-2 mb-3.5"
-          style={{ animation: 'gw-enter 0.55s cubic-bezier(0.16,1,0.3,1) 0.05s both' }}
-        >
-          <span className="size-1.5 rounded-full bg-primary shrink-0 [animation:pulse-glow_2.8s_ease-in-out_infinite]" />
-          <span className="text-[0.5625rem] tracking-[0.22em] uppercase text-primary">
-            {mode === 'signin' ? 'Field Ops · Auth' : 'Field Ops · Register'}
-          </span>
-        </div>
-
-        {/* Title */}
-        <h1
-          className="font-display font-black leading-[0.86] tracking-[-0.01em] text-foreground mb-11 select-none"
-          style={{
-            fontSize: 'clamp(4rem, 21vw, 6.25rem)',
-            animation: 'gw-enter 0.65s cubic-bezier(0.16,1,0.3,1) 0.12s both',
-          }}
-        >
-          GROUND<br />WORK
-        </h1>
-
-        {/* Divider — draws in from left */}
-        <div
-          className="w-full h-px bg-border mb-9 origin-left"
-          style={{ animation: 'gw-grow-x 0.9s cubic-bezier(0.16,1,0.3,1) 0.3s both' }}
-        />
+        {/* Separator */}
+        <div className="border-t border-border mb-8" />
 
         {signupDone ? (
-          <div style={{ animation: 'gw-enter 0.5s cubic-bezier(0.16,1,0.3,1) both' }}>
-            <p className="text-sm text-foreground/70 mb-4">
+          <div>
+            <p className="font-mono text-sm text-foreground/70 leading-relaxed mb-5">
               Check your email for a confirmation link, then come back and sign in.
             </p>
             <button
               onClick={() => switchMode('signin')}
-              className="text-[0.5625rem] tracking-[0.16em] uppercase text-primary hover:opacity-70 transition-opacity"
+              className="font-mono text-xs text-primary hover:opacity-70 transition-opacity"
             >
               ← Back to sign in
             </button>
           </div>
         ) : (
-          <form
-            onSubmit={handleSubmit}
-            style={{ animation: 'gw-enter 0.6s cubic-bezier(0.16,1,0.3,1) 0.48s both' }}
-          >
-            <div className="mb-7">
-              <Label
+          <form onSubmit={handleSubmit} noValidate>
+
+            <div className="mb-5">
+              <label
                 htmlFor="email"
-                className="text-[0.5625rem] tracking-[0.22em] uppercase text-muted-foreground mb-2.5 flex items-center gap-2.5"
+                className="font-mono text-xs font-medium text-muted-foreground block mb-2"
               >
-                <span className="text-primary/40">01</span>
-                Email Address
-              </Label>
+                Email
+              </label>
               <Input
                 id="email"
                 type="email"
@@ -154,18 +98,17 @@ export default function Login() {
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="border-0 border-b rounded-none px-0 h-auto py-2 shadow-none focus-visible:ring-0 focus-visible:border-primary placeholder:text-foreground/10 transition-colors duration-300"
+                className="h-10 font-mono text-sm"
               />
             </div>
 
             <div className="mb-7">
-              <Label
+              <label
                 htmlFor="password"
-                className="text-[0.5625rem] tracking-[0.22em] uppercase text-muted-foreground mb-2.5 flex items-center gap-2.5"
+                className="font-mono text-xs font-medium text-muted-foreground block mb-2"
               >
-                <span className="text-primary/40">02</span>
                 Password
-              </Label>
+              </label>
               <Input
                 id="password"
                 type="password"
@@ -174,13 +117,12 @@ export default function Login() {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="border-0 border-b rounded-none px-0 h-auto py-2 shadow-none focus-visible:ring-0 focus-visible:border-primary placeholder:text-foreground/10 transition-colors duration-300"
+                className="h-10 font-mono text-sm"
               />
             </div>
 
             {error && (
-              <p className="text-xs text-destructive mb-6 flex items-center gap-2">
-                <span className="shrink-0 text-destructive/60">!</span>
+              <p className={cn('font-mono text-xs text-destructive mb-5 -mt-2')}>
                 {error}
               </p>
             )}
@@ -188,47 +130,45 @@ export default function Login() {
             <Button
               type="submit"
               disabled={submitting}
-              className="w-full mt-9 h-12 rounded-none text-xs tracking-[0.16em] uppercase"
+              size="lg"
+              className="w-full font-mono text-sm"
             >
               {submitting
-                ? mode === 'signup' ? 'Creating account…' : 'Authenticating…'
-                : mode === 'signup' ? 'Create Account →' : 'Sign In →'}
+                ? mode === 'signup' ? 'Creating account…' : 'Signing in…'
+                : mode === 'signup' ? 'Create account' : 'Sign in'}
             </Button>
 
-            <p className="text-center mt-6 text-[0.5625rem] tracking-[0.12em] uppercase text-muted-foreground/40">
-              {mode === 'signin' ? (
-                <>
-                  No account?{' '}
-                  <button
-                    type="button"
-                    onClick={() => switchMode('signup')}
-                    className="text-primary/60 hover:text-primary transition-colors"
-                  >
-                    Create one
-                  </button>
-                </>
-              ) : (
-                <>
-                  Have an account?{' '}
-                  <button
-                    type="button"
-                    onClick={() => switchMode('signin')}
-                    className="text-primary/60 hover:text-primary transition-colors"
-                  >
-                    Sign in
-                  </button>
-                </>
-              )}
-            </p>
           </form>
         )}
 
-        <p
-          className="text-[0.5625rem] tracking-[0.16em] uppercase text-muted-foreground/20 mt-12"
-          style={{ animation: 'gw-enter 0.6s cubic-bezier(0.16,1,0.3,1) 0.72s both' }}
-        >
-          Groundwork · v1
-        </p>
+        {/* Mode toggle */}
+        {!signupDone && (
+          <p className="font-mono text-xs text-muted-foreground mt-5">
+            {mode === 'signin' ? (
+              <>
+                No account?{' '}
+                <button
+                  type="button"
+                  onClick={() => switchMode('signup')}
+                  className="text-primary hover:opacity-70 transition-opacity"
+                >
+                  Create one
+                </button>
+              </>
+            ) : (
+              <>
+                Have an account?{' '}
+                <button
+                  type="button"
+                  onClick={() => switchMode('signin')}
+                  className="text-primary hover:opacity-70 transition-opacity"
+                >
+                  Sign in
+                </button>
+              </>
+            )}
+          </p>
+        )}
 
       </div>
     </div>
