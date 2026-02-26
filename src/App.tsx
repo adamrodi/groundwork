@@ -1,8 +1,7 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import { AuthProvider } from '@/lib/auth'
-import { ColorModeProvider } from '@/lib/colorMode'
 import ProtectedRoute from '@/components/ProtectedRoute'
-import ColorModeToggle from '@/components/ColorModeToggle'
+import AppLayout from '@/components/AppLayout'
 import Dashboard from '@/pages/Dashboard'
 import Clients from '@/pages/Clients'
 import ClientDetail from '@/pages/ClientDetail'
@@ -16,26 +15,33 @@ import Login from '@/pages/Login'
 
 function App() {
   return (
-    <ColorModeProvider>
-      <AuthProvider>
-        <BrowserRouter>
-          <ColorModeToggle />
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/clients" element={<ProtectedRoute><Clients /></ProtectedRoute>} />
-            <Route path="/clients/:id" element={<ProtectedRoute><ClientDetail /></ProtectedRoute>} />
-            <Route path="/jobs" element={<ProtectedRoute><Jobs /></ProtectedRoute>} />
-            <Route path="/jobs/new" element={<ProtectedRoute><JobNew /></ProtectedRoute>} />
-            <Route path="/jobs/:id" element={<ProtectedRoute><JobDetail /></ProtectedRoute>} />
-            <Route path="/invoices" element={<ProtectedRoute><Invoices /></ProtectedRoute>} />
-            <Route path="/invoices/:id" element={<ProtectedRoute><InvoiceDetail /></ProtectedRoute>} />
-            <Route path="/i/:id" element={<InvoicePublic />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
-    </ColorModeProvider>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/i/:id" element={<InvoicePublic />} />
+          <Route
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Outlet />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/clients" element={<Clients />} />
+            <Route path="/clients/:id" element={<ClientDetail />} />
+            <Route path="/jobs" element={<Jobs />} />
+            <Route path="/jobs/new" element={<JobNew />} />
+            <Route path="/jobs/:id" element={<JobDetail />} />
+            <Route path="/invoices" element={<Invoices />} />
+            <Route path="/invoices/:id" element={<InvoiceDetail />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 

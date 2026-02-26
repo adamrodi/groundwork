@@ -105,7 +105,7 @@ Each phase has a detailed spec in `docs/`. Start a session by reading CLAUDE.md 
 | 3. Jobs | [`docs/03-jobs.md`](docs/03-jobs.md) | complete |
 | 4. Invoices | [`docs/04-invoices.md`](docs/04-invoices.md) | complete |
 | 5. Payments | [`docs/05-payments.md`](docs/05-payments.md) | not started |
-| 6. Dashboard | [`docs/06-dashboard.md`](docs/06-dashboard.md) | not started |
+| 6. Dashboard | [`docs/06-dashboard.md`](docs/06-dashboard.md) | complete |
 
 Each doc contains: goal, exact files to create/modify, dependencies to install, step-by-step implementation with code, and done criteria. Update the doc's **Status** line and the table above as work progresses.
 

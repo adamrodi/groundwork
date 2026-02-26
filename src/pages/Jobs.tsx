@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Plus } from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -39,12 +39,7 @@ export default function Jobs() {
 
   return (
     <div className="p-4 max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold">Jobs</h1>
-        <Button asChild>
-          <Link to="/jobs/new">New Job</Link>
-        </Button>
-      </div>
+      <h1 className="text-2xl font-semibold mb-6">Jobs</h1>
 
       {loading ? (
         <p className="text-muted-foreground">Loading…</p>
@@ -92,6 +87,14 @@ export default function Jobs() {
           </TableBody>
         </Table>
       )}
+
+      <Link
+        to="/jobs/new"
+        className="fixed bottom-20 right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-green-600 text-white shadow-lg hover:bg-green-700 transition-colors"
+        aria-label="New job"
+      >
+        <Plus size={24} />
+      </Link>
     </div>
   )
 }

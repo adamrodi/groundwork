@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/auth'
 import type { Client } from '@/lib/types'
-import { Button } from '@/components/ui/button'
+import { Plus } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -57,10 +57,7 @@ export default function Clients() {
 
   return (
     <div className="mx-auto max-w-3xl p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Clients</h1>
-        <Button onClick={() => setDialogOpen(true)}>New Client</Button>
-      </div>
+      <h1 className="text-2xl font-semibold mb-6">Clients</h1>
 
       {loading ? (
         <p className="text-muted-foreground">Loading…</p>
@@ -103,6 +100,14 @@ export default function Clients() {
           </TableBody>
         </Table>
       )}
+
+      <button
+        onClick={() => setDialogOpen(true)}
+        className="fixed bottom-20 right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-green-600 text-white shadow-lg hover:bg-green-700 transition-colors"
+        aria-label="New client"
+      >
+        <Plus size={24} />
+      </button>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent aria-describedby={undefined}>
