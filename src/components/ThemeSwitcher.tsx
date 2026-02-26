@@ -8,16 +8,18 @@ export default function ThemeSwitcher() {
   const [open, setOpen] = useState(false)
 
   return (
-    <div className="fixed top-4 right-4 z-50">
-
-      {/* Backdrop — closes panel on outside click */}
+    <>
+      {/* Backdrop — closes panel on outside click. Must live outside the z-50
+          container so it doesn't inherit that stacking context and cover other UI. */}
       {open && (
         <div
-          className="fixed inset-0 z-[-1]"
+          className="fixed inset-0 z-40"
           onClick={() => setOpen(false)}
           aria-hidden="true"
         />
       )}
+
+      <div className="fixed top-4 right-4 z-50">
 
       {/* Toggle button */}
       <button
@@ -81,6 +83,7 @@ export default function ThemeSwitcher() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   )
 }
