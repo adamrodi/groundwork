@@ -51,8 +51,8 @@ All tables are in Supabase (Postgres). RLS is enabled on all of them. All `id` c
 
 - `clients` — id, user_id (uuid, FK → auth.users), name (text), email (text), phone (text), address (text), created_at
 - `jobs` — id, user_id (FK → auth.users), client_id (FK → clients), description (text), date (date), status (`pending`|`complete`), created_at
-- `line_items` — id, job_id (FK → jobs), description (text), quantity (numeric), unit_price (integer, cents)
-- `invoices` — id, user_id (FK → auth.users), job_id (FK → jobs), client_id (FK → clients), invoice_number (serial, Postgres-generated), status (`draft`|`sent`|`paid`), total (integer, cents), sent_at, paid_at, created_at
+- `line_items` — id, job_id (FK → jobs), description (text), quantity (numeric), unit_price (numeric, cents)
+- `invoices` — id, user_id (FK → auth.users), job_id (FK → jobs), client_id (FK → clients), invoice_number (serial, Postgres-generated), status (`draft`|`sent`|`paid`), total (numeric, cents), sent_at, paid_at, created_at
 
 Money is stored in **cents** (integer) to avoid floating-point issues. Divide by 100 for display. The `payment_method` column does not exist yet — will be needed when payments are built.
 
@@ -96,12 +96,18 @@ What's not built yet:
 
 ## MVP build order
 
-1. **Auth** — Login page, session guard on all routes
-2. **Clients** — list, create, view
-3. **Jobs** — create a job for a client, add line items
-4. **Invoices** — generate from a job, view as PDF, send via SMS (iMessage deep link) and email (Resend via Supabase Edge Function); public client view at `/i/:id`
-5. **Payments** — Square Checkout on public invoice page (pay by card); also show free options (e-transfer, cash). Square webhook via Edge Function marks invoice as `paid`.
-6. **Dashboard** — open invoices and recent jobs summary
+Each phase has a detailed spec in `docs/`. Start a session by reading CLAUDE.md (this file) plus the relevant phase doc — nothing else is needed.
+
+| Phase | Doc | Status |
+| --- | --- | --- |
+| 1. Auth | [`docs/01-auth.md`](docs/01-auth.md) | not started |
+| 2. Clients | [`docs/02-clients.md`](docs/02-clients.md) | not started |
+| 3. Jobs | [`docs/03-jobs.md`](docs/03-jobs.md) | not started |
+| 4. Invoices | [`docs/04-invoices.md`](docs/04-invoices.md) | not started |
+| 5. Payments | [`docs/05-payments.md`](docs/05-payments.md) | not started |
+| 6. Dashboard | [`docs/06-dashboard.md`](docs/06-dashboard.md) | not started |
+
+Each doc contains: goal, exact files to create/modify, dependencies to install, step-by-step implementation with code, and done criteria. Update the doc's **Status** line and the table above as work progresses.
 
 ## Conventions
 
