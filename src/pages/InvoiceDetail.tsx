@@ -140,7 +140,7 @@ export default function InvoiceDetail() {
           <Badge className={cn(statusClass(invoice.status))}>{invoice.status}</Badge>
         </div>
         <p className="text-sm text-muted-foreground">
-          {new Date(invoice.created_at).toLocaleDateString('en-CA')}
+          {new Date(invoice.created_at).toLocaleDateString('en-US')}
         </p>
       </div>
 
