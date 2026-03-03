@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useState } from 'react'
-import LineItemsEditor, { type LineItemDraft } from './LineItemsEditor'
+import LineItemsEditor, { type LineItemDraft } from '@/components/LineItemsEditor'
 
 function emptyItem(): LineItemDraft {
   return { description: '', quantity: '', unit_price: '' }

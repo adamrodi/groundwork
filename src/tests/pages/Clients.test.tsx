@@ -2,8 +2,9 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
-import Clients from './Clients'
+import Clients from '@/pages/Clients'
 import type { Client } from '@/lib/types'
+import { makeChain } from '@/tests/helpers'
 
 // Hoist mockFrom so it's available inside vi.mock factory
 const { mockFrom } = vi.hoisted(() => ({ mockFrom: vi.fn() }))
@@ -24,15 +25,6 @@ function renderPage() {
   )
 }
 
-function makeChain(result: { data: unknown; error: unknown }) {
-  const chain: Record<string, unknown> = {}
-  const terminal = { then: (r: (v: unknown) => void) => r(result) }
-  const methods = ['select', 'insert', 'order', 'eq', 'single']
-  for (const m of methods) {
-    chain[m] = vi.fn(() => ({ ...chain, ...terminal }))
-  }
-  return { ...chain, ...terminal }
-}
 
 const sampleClients: Client[] = [
   {

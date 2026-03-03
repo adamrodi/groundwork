@@ -2,7 +2,8 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import JobNew from './JobNew'
+import JobNew from '@/pages/JobNew'
+import { makeChain } from '@/tests/helpers'
 
 const { mockFrom } = vi.hoisted(() => ({ mockFrom: vi.fn() }))
 const { mockNavigate } = vi.hoisted(() => ({ mockNavigate: vi.fn() }))
@@ -28,16 +29,6 @@ function renderPage(search = '') {
       </Routes>
     </MemoryRouter>
   )
-}
-
-function makeChain(result: { data: unknown; error: unknown }) {
-  const terminal = { then: (r: (v: unknown) => void) => r(result) }
-  const chain: Record<string, unknown> = {}
-  const methods = ['select', 'insert', 'update', 'eq', 'order', 'single', 'maybeSingle']
-  for (const m of methods) {
-    chain[m] = vi.fn(() => ({ ...chain, ...terminal }))
-  }
-  return { ...chain, ...terminal }
 }
 
 const sampleClients = [

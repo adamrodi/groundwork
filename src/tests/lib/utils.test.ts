@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { formatCents } from './utils'
+import { formatCents } from '@/lib/utils'
 
 describe('formatCents', () => {
   it('formats zero', () => {
