@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import ClientForm from './ClientForm'
+import ClientForm from '@/components/ClientForm'
 import type { Client } from '@/lib/types'
 
 const onSubmit = vi.fn()

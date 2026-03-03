@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import ClientDetail from './ClientDetail'
+import ClientDetail from '@/pages/ClientDetail'
 import type { Client, Job } from '@/lib/types'
 
 const { mockFrom } = vi.hoisted(() => ({ mockFrom: vi.fn() }))

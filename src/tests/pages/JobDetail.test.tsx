@@ -2,9 +2,10 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import JobDetail from './JobDetail'
+import JobDetail from '@/pages/JobDetail'
 import type { Job, LineItem } from '@/lib/types'
 import { formatCents } from '@/lib/utils'
+import { makeChain } from '@/tests/helpers'
 
 const { mockFrom } = vi.hoisted(() => ({ mockFrom: vi.fn() }))
 const { mockNavigate } = vi.hoisted(() => ({ mockNavigate: vi.fn() }))
@@ -30,16 +31,6 @@ function renderPage(jobId = 'j1') {
       </Routes>
     </MemoryRouter>
   )
-}
-
-function makeChain(result: { data: unknown; error: unknown }) {
-  const terminal = { then: (r: (v: unknown) => void) => r(result) }
-  const chain: Record<string, unknown> = {}
-  const methods = ['select', 'insert', 'update', 'eq', 'order', 'single', 'maybeSingle']
-  for (const m of methods) {
-    chain[m] = vi.fn(() => ({ ...chain, ...terminal }))
-  }
-  return { ...chain, ...terminal }
 }
 
 type JobWithClient = Job & { clients: { name: string } }

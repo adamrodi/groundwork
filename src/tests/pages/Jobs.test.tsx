@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
-import Jobs from './Jobs'
+import Jobs from '@/pages/Jobs'
 import type { Job } from '@/lib/types'
+import { makeChain } from '@/tests/helpers'
 
 const { mockFrom } = vi.hoisted(() => ({ mockFrom: vi.fn() }))
 
@@ -20,16 +21,6 @@ function renderPage() {
       <Jobs />
     </MemoryRouter>
   )
-}
-
-function makeChain(result: { data: unknown; error: unknown }) {
-  const terminal = { then: (r: (v: unknown) => void) => r(result) }
-  const chain: Record<string, unknown> = {}
-  const methods = ['select', 'insert', 'update', 'eq', 'order', 'single', 'maybeSingle']
-  for (const m of methods) {
-    chain[m] = vi.fn(() => ({ ...chain, ...terminal }))
-  }
-  return { ...chain, ...terminal }
 }
 
 type JobWithClient = Job & { clients: { name: string } }
