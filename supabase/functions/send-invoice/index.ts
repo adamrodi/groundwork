@@ -2,20 +2,22 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { createClient } from "jsr:@supabase/supabase-js@2"
 import { Resend } from "npm:resend"
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+function corsHeaders() {
+  return {
+    'Access-Control-Allow-Origin': Deno.env.get('APP_URL') ?? 'https://groundwork.vercel.app',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  }
 }
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response('ok', { headers: corsHeaders() })
   }
 
   const { invoiceId } = await req.json()
 
   if (!invoiceId) {
-    return new Response(JSON.stringify({ error: 'invoiceId is required' }), { status: 400, headers: corsHeaders })
+    return new Response(JSON.stringify({ error: 'invoiceId is required' }), { status: 400, headers: corsHeaders() })
   }
 
   const supabase = createClient(
@@ -30,11 +32,11 @@ Deno.serve(async (req: Request) => {
     .single()
 
   if (invoiceError || !invoice) {
-    return new Response(JSON.stringify({ error: 'Invoice not found' }), { status: 404, headers: corsHeaders })
+    return new Response(JSON.stringify({ error: 'Invoice not found' }), { status: 404, headers: corsHeaders() })
   }
 
   if (!invoice.clients?.email) {
-    return new Response(JSON.stringify({ error: 'Client has no email address' }), { status: 400, headers: corsHeaders })
+    return new Response(JSON.stringify({ error: 'Client has no email address' }), { status: 400, headers: corsHeaders() })
   }
 
   const resend = new Resend(Deno.env.get('RESEND_API_KEY'))
@@ -53,7 +55,7 @@ Deno.serve(async (req: Request) => {
   })
 
   if (emailError) {
-    return new Response(JSON.stringify({ error: 'Failed to send email' }), { status: 500, headers: corsHeaders })
+    return new Response(JSON.stringify({ error: 'Failed to send email' }), { status: 500, headers: corsHeaders() })
   }
 
   await supabase
@@ -62,6 +64,6 @@ Deno.serve(async (req: Request) => {
     .eq('id', invoiceId)
 
   return new Response(JSON.stringify({ ok: true }), {
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    headers: { ...corsHeaders(), 'Content-Type': 'application/json' }
   })
 })

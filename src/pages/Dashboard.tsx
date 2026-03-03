@@ -63,7 +63,7 @@ export default function Dashboard() {
   }
 
   const totalOutstanding = outstanding.reduce((sum, inv) => sum + inv.total, 0)
-  const monthLabel = new Date().toLocaleDateString('en-CA', { month: 'long', year: 'numeric' })
+  const monthLabel = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 
   function daysSinceSent(sentAt: string) {
     return Math.floor((Date.now() - new Date(sentAt).getTime()) / 86400000)

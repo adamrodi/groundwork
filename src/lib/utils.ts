@@ -6,5 +6,5 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCents(cents: number): string {
-  return (cents / 100).toLocaleString('en-CA', { style: 'currency', currency: 'CAD' })
+  return (cents / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' })
 }

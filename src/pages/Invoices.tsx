@@ -73,7 +73,7 @@ export default function Invoices() {
                   </Badge>
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {new Date(invoice.created_at).toLocaleDateString('en-CA')}
+                  {new Date(invoice.created_at).toLocaleDateString('en-US')}
                 </TableCell>
               </TableRow>
             ))}

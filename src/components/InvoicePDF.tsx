@@ -1,5 +1,6 @@
 import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer'
 import type { Invoice, Client, LineItem } from '@/lib/types'
+import { formatCents } from '@/lib/utils'
 
 const styles = StyleSheet.create({
   page: {
@@ -94,9 +95,6 @@ const styles = StyleSheet.create({
   },
 })
 
-function formatMoney(cents: number) {
-  return (cents / 100).toLocaleString('en-CA', { style: 'currency', currency: 'CAD' })
-}
 
 type InvoicePDFProps = {
   invoice: Invoice
@@ -121,7 +119,7 @@ export function InvoicePDF({ invoice, client, lineItems, businessName = 'Groundw
           </View>
           <View>
             <Text style={styles.label}>Date</Text>
-            <Text>{new Date(invoice.created_at).toLocaleDateString('en-CA')}</Text>
+            <Text>{new Date(invoice.created_at).toLocaleDateString('en-US')}</Text>
           </View>
         </View>
 
@@ -144,8 +142,8 @@ export function InvoicePDF({ invoice, client, lineItems, businessName = 'Groundw
             <View key={item.id} style={styles.tableRow}>
               <Text style={styles.colDescription}>{item.description}</Text>
               <Text style={styles.colQty}>{item.quantity}</Text>
-              <Text style={styles.colUnitPrice}>{formatMoney(item.unit_price)}</Text>
-              <Text style={styles.colTotal}>{formatMoney(item.quantity * item.unit_price)}</Text>
+              <Text style={styles.colUnitPrice}>{formatCents(item.unit_price)}</Text>
+              <Text style={styles.colTotal}>{formatCents(item.quantity * item.unit_price)}</Text>
             </View>
           ))}
         </View>
@@ -154,7 +152,7 @@ export function InvoicePDF({ invoice, client, lineItems, businessName = 'Groundw
 
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>Total</Text>
-          <Text style={styles.totalValue}>{formatMoney(total)}</Text>
+          <Text style={styles.totalValue}>{formatCents(total)}</Text>
         </View>
 
         <Text style={styles.footer}>Thank you for your business</Text>

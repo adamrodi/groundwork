@@ -1,12 +1,13 @@
 import { useLocation, Link } from 'react-router-dom'
-import { LayoutDashboard, Users, Briefcase, FileText } from 'lucide-react'
+import { LayoutDashboard, Users, Briefcase, FileText, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const NAV_ITEMS = [
   { label: 'Dashboard', path: '/',         icon: LayoutDashboard },
   { label: 'Clients',   path: '/clients',  icon: Users },
   { label: 'Jobs',      path: '/jobs',     icon: Briefcase },
-  { label: 'Invoices',  path: '/invoices', icon: FileText },
+  { label: 'Invoices',  path: '/invoices',  icon: FileText },
+  { label: 'Settings',  path: '/settings',  icon: Settings },
 ]
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {

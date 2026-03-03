@@ -38,3 +38,9 @@ export type Invoice = {
   paid_at: string | null
   created_at: string
 }
+
+export type Profile = {
+  id: string
+  stripe_account_id: string | null
+  created_at: string
+}

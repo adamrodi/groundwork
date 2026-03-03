@@ -11,6 +11,7 @@ import JobDetail from '@/pages/JobDetail'
 import Invoices from '@/pages/Invoices'
 import InvoiceDetail from '@/pages/InvoiceDetail'
 import InvoicePublic from '@/pages/InvoicePublic'
+import Settings from '@/pages/Settings'
 import Login from '@/pages/Login'
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
             <Route path="/jobs/:id" element={<JobDetail />} />
             <Route path="/invoices" element={<Invoices />} />
             <Route path="/invoices/:id" element={<InvoiceDetail />} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
